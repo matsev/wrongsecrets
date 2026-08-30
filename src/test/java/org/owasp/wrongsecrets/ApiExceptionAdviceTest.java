@@ -1,5 +1,7 @@
 package org.owasp.wrongsecrets;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -33,17 +35,20 @@ class ApiExceptionAdviceTest {
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.status").value(404))
         .andExpect(jsonPath("$.title").exists())
-        .andExpect(jsonPath("$.detail").exists())
+        .andExpect(jsonPath("$.detail").value(containsString("Resource not found")))
         .andExpect(jsonPath("$.instance").exists());
   }
 
   @Test
-  void shouldReturnProblemDetailWithRfc9457FieldsForGenericException() throws Exception {
+  void shouldReturnGenericDetailWithoutLeakingExceptionMessage() throws Exception {
     mvc.perform(get("/test/error").accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isInternalServerError())
         .andExpect(jsonPath("$.status").value(500))
         .andExpect(jsonPath("$.title").value("Internal Server Error"))
-        .andExpect(jsonPath("$.detail").exists())
+        .andExpect(
+            jsonPath("$.detail")
+                .value("An unexpected error occurred. Please contact support if the problem persists."))
+        .andExpect(jsonPath("$.detail").value(not(containsString("Unexpected failure"))))
         .andExpect(jsonPath("$.instance").exists());
   }
 

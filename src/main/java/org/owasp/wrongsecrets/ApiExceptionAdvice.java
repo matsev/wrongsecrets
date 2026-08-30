@@ -2,6 +2,7 @@ package org.owasp.wrongsecrets;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
  * responses. Scoped to {@link RestController} annotated beans only; Thymeleaf controllers are
  * unaffected.
  */
+@Slf4j
 @RestControllerAdvice(annotations = RestController.class)
 public class ApiExceptionAdvice {
 
@@ -45,9 +47,10 @@ public class ApiExceptionAdvice {
    */
   @ExceptionHandler(Exception.class)
   public ProblemDetail handleGenericException(Exception ex, HttpServletRequest request) {
+    log.error("Unhandled exception for request {}", request.getRequestURI(), ex);
     ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
     pd.setTitle("Internal Server Error");
-    pd.setDetail(ex.getMessage());
+    pd.setDetail("An unexpected error occurred. Please contact support if the problem persists.");
     pd.setInstance(URI.create(request.getRequestURI()));
     return pd;
   }
