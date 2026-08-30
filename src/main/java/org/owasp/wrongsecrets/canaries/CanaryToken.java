@@ -25,4 +25,19 @@ public class CanaryToken {
 
   @JsonProperty("additional_data")
   private final AdditionalCanaryData additionalData;
+
+  @Override
+  public String toString() {
+    return "CanaryToken{memo="
+        + sanitizeForLog(memo)
+        + ", channel="
+        + sanitizeForLog(channel)
+        + ", time="
+        + sanitizeForLog(time)
+        + ", manage_url=<redacted>, additional_data=<redacted>}";
+  }
+
+  private static String sanitizeForLog(String value) {
+    return value == null ? null : value.replaceAll("[\r\n]", "_");
+  }
 }

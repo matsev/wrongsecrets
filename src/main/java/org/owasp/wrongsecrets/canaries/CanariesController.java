@@ -34,13 +34,12 @@ public class CanariesController {
     try {
       String canarytokenContents =
           new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(canaryToken);
-      log.info("Canarytoken callback called with following token: {}", canarytokenContents);
+      log.info("Canarytoken callback called with following token: {}", canaryToken);
       canaryCounter.upCallBackCounter();
       canaryCounter.setLastCanaryToken(canarytokenContents);
     } catch (JsonProcessingException e) {
       log.warn("Exception with processing canarytoken: {}", e.getMessage());
     }
-    log.info("Canarytoken called, with manage_url {}", canaryToken.getManageUrl());
     log.info("Total number of canary callback calls: {}", canaryCounter.getTotalCount());
     return new ResponseEntity<>("all good", HttpStatus.ACCEPTED);
   }
